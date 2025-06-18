@@ -35,7 +35,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Show company logo
-st.image("logo.png", width=400)
+st.markdown(
+    """
+    <div style='text-align: center;'>
+        <img src='logo.png' width='400'>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Page title and input
 st.markdown("## 🔧 Maintenance Tracker - Rugaib", unsafe_allow_html=True)
