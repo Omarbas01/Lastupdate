@@ -81,3 +81,50 @@ if st.button("Search"):
             # Column mappings
             phone_col = df.columns[19]      # T
             invoice_col = df.columns[1]     # B
+            name_col = df.columns[2]        # C
+            address_col = df.columns[20]    # U
+            d365_col = df.columns[12]       # M
+            markup_col = df.columns[14]     # O
+            date_col = df.columns[15]       # P
+            info_col = df.columns[28]       # AC
+            part_img_col = df.columns[29]   # AD
+            problem_img_col = df.columns[30]# AE
+
+            result = df[
+                (df[phone_col].astype(str) == user_input) |
+                (df[invoice_col].astype(str) == user_input)
+            ]
+
+            if not result.empty:
+                for _, row in result.iterrows():
+                    st.markdown(f"""
+<div class='result-box'>
+<b>Name:</b> {row[name_col]}<br>
+<b>Mobile Number:</b> {row[phone_col]}<br>
+<b>Invoice Number:</b> {row[invoice_col]}<br>
+<b>Address:</b> {row[address_col]}<br>
+<b>D365 Update:</b> {row[d365_col]}<br>
+<b>Service Type:</b> {row[markup_col]}<br>
+<b>Scheduled Date:</b> {row[date_col]}<br>
+<b>Extra Info:</b> {row[info_col]}
+</div>
+                    """, unsafe_allow_html=True)
+
+                    # Part Image
+                    part_img_url = convert_drive_url_to_direct(str(row[part_img_col]))
+                    if part_img_url:
+                        st.markdown("📸 **Picture of Part**")
+                        st.image(part_img_url, width=300)
+
+                    # Problem Image
+                    problem_img_url = convert_drive_url_to_direct(str(row[problem_img_col]))
+                    if problem_img_url:
+                        st.markdown("⚠️ **Picture of Problem**")
+                        st.image(problem_img_url, width=300)
+            else:
+                st.error("No matching record found.")
+        except Exception as e:
+            st.error(f"⚠️ Error reading data: {e}")
+
+# ----------- Footer -----------
+st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
