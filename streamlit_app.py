@@ -22,6 +22,7 @@ st.markdown("""
         }
         .result-box {
             background-color: #ffffff;
+            color: #000000;  /* ✅ هذا يضمن أن النص يظهر حتى في الوضع الليلي */
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #e0e0e0;
@@ -33,7 +34,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------- Centered Logo -----------
+# ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
     st.image(logo, width=400)
@@ -45,7 +46,7 @@ st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=T
 st.markdown("#### Enter Mobile Number or Invoice Number:")
 user_input = st.text_input("")
 
-# ----------- Load Data from Google Sheet -----------
+# ----------- Load Data -----------
 @st.cache_data
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
@@ -53,13 +54,12 @@ def load_data():
 
 df = load_data()
 
-# ----------- Convert Google Drive URL to Direct Link -----------
+# ----------- Convert Google Drive URL to Direct Image ID -----------
 def convert_drive_url_to_direct(cell_value):
     if pd.isna(cell_value):
         return None
 
     first_url = str(cell_value).split()[0]
-
     patterns = [
         r"id=([a-zA-Z0-9_-]{10,})",
         r"/d/([a-zA-Z0-9_-]{10,})"
@@ -68,8 +68,7 @@ def convert_drive_url_to_direct(cell_value):
     for pattern in patterns:
         match = re.search(pattern, first_url)
         if match:
-            file_id = match.group(1)
-            return file_id
+            return match.group(1)
 
     return None
 
@@ -79,6 +78,7 @@ if st.button("Search"):
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
+            # Adjust column indices
             phone_col = df.columns[19]       # T
             invoice_col = df.columns[1]      # B
             name_col = df.columns[2]         # C
@@ -110,13 +110,13 @@ if st.button("Search"):
 </div>
                     """, unsafe_allow_html=True)
 
-                    # Display Picture of Part as link
+                    # ----------- Picture of Part (link only)
                     part_img_id = convert_drive_url_to_direct(row[part_img_col])
                     if part_img_id:
                         st.markdown("📸 **Picture of Part**")
                         st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)", unsafe_allow_html=True)
 
-                    # Display Picture of Problem as link
+                    # ----------- Picture of Problem (link only)
                     problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
                     if problem_img_id:
                         st.markdown("⚠️ **Picture of Problem**")
