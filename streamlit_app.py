@@ -1,37 +1,52 @@
+
 import streamlit as st
 import pandas as pd
 
-# UI setup
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
-st.image("logo.png", width=300)
-st.markdown("<h2 style='text-align: center;'>🔧 Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
-# Load data from Excel
+st.title("🔍 Maintenance Tracker - Rugaib")
+st.markdown("Enter mobile number or invoice number:")
+
+user_input = st.text_input("")
+
 @st.cache_data
 def load_data():
-    try:
-        df = pd.read_excel("your_data.xlsx")  # replace with actual filename
-        return df
-    except Exception as e:
-        st.error(f"Error loading Excel file: {e}")
-        return pd.DataFrame()
+    url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
+    return pd.read_csv(url)
 
 df = load_data()
 
-# Input
-user_input = st.text_input("Enter Mobile Number or Invoice Number:")
-
-# Search
 if st.button("Search"):
-    if df.empty:
-        st.warning("No data available.")
-    elif "Mobile Number" not in df.columns:
-        st.error("Column 'Mobile Number' not found in Excel file.")
+    if user_input.strip() == "":
+        st.warning("Please enter a mobile number or invoice number.")
     else:
-        results = df[df["Mobile Number"].astype(str) == user_input]
-        if not results.empty:
-            for idx, row in results.iterrows():
-                for col in df.columns:
-                    st.markdown(f"**{col}**: {row[col]}")
+        phone_col = df.columns[19]   # T
+        invoice_col = df.columns[1]  # B
+        name_col = df.columns[2]     # C
+        address_col = df.columns[20] # U
+        d365_col = df.columns[12]    # M
+
+        result = df[
+            (df[phone_col].astype(str) == user_input) |
+            (df[invoice_col].astype(str) == user_input)
+        ]
+
+        if not result.empty:
+            for _, row in result.iterrows():
+                st.markdown("""
+**الاسم:** {}  
+**رقم الجوال:** {}  
+**رقم الفاتورة:** {}  
+**العنوان:** {}  
+**تحديث D365:** {}
+                """.format(
+                    row[name_col],
+                    row[phone_col],
+                    row[invoice_col],
+                    row[address_col],
+                    row[d365_col]
+                ))
         else:
-            st.warning("No matching record found.")
+            st.error("لم يتم العثور على نتائج مطابقة.")
+
+st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
