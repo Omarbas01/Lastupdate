@@ -38,7 +38,7 @@ try:
     logo = Image.open("logo.png")
     st.image(logo, width=400)
 except FileNotFoundError:
-    st.warning("⚠️ 'logo.png' not found.")
+    st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
 # ----------- Title & Input -----------
 st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
@@ -53,15 +53,13 @@ def load_data():
 
 df = load_data()
 
-# ----------- Convert Drive Link to Direct Image URL -----------
+# ----------- Convert Google Drive URL to Direct Link -----------
 def convert_drive_url_to_direct(cell_value):
     if pd.isna(cell_value):
         return None
 
-    # Extract first link only if multiple exist
     first_url = str(cell_value).split()[0]
 
-    # Extract file ID from different possible formats
     patterns = [
         r"id=([a-zA-Z0-9_-]{10,})",
         r"/d/([a-zA-Z0-9_-]{10,})"
@@ -71,7 +69,7 @@ def convert_drive_url_to_direct(cell_value):
         match = re.search(pattern, first_url)
         if match:
             file_id = match.group(1)
-            return f"https://drive.google.com/uc?id={file_id}"
+            return file_id
 
     return None
 
@@ -112,19 +110,17 @@ if st.button("Search"):
 </div>
                     """, unsafe_allow_html=True)
 
-                    # ----------- Display Picture of Part -----------
-                    part_img_url = convert_drive_url_to_direct(row[part_img_col])
-                    if part_img_url:
+                    # Display Picture of Part as link
+                    part_img_id = convert_drive_url_to_direct(row[part_img_col])
+                    if part_img_id:
                         st.markdown("📸 **Picture of Part**")
-                        st.image(part_img_url, width=300)
-                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_url.split('=')[-1]}/view)", unsafe_allow_html=True)
+                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)", unsafe_allow_html=True)
 
-                    # ----------- Display Picture of Problem -----------
-                    problem_img_url = convert_drive_url_to_direct(row[problem_img_col])
-                    if problem_img_url:
+                    # Display Picture of Problem as link
+                    problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
+                    if problem_img_id:
                         st.markdown("⚠️ **Picture of Problem**")
-                        st.image(problem_img_url, width=300)
-                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_url.split('=')[-1]}/view)", unsafe_allow_html=True)
+                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)", unsafe_allow_html=True)
 
             else:
                 st.error("No matching record found.")
