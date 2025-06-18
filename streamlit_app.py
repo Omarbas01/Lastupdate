@@ -33,12 +33,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------- Centered Logo -----------
-st.markdown(
-    """
-    <div style='text-align: center;'>
-        <img src='logo.png' width='400'>
-    </div>
-    """,
+from PIL import Image
+
+# Centered logo using st.image
+logo = Image.open("logo.png")
+st.image(logo, width=400)
+
     unsafe_allow_html=True
 )
 
