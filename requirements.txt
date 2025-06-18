@@ -1,3 +1,4 @@
-streamlit
-pandas
-fpdf
+your_project/
+├── app.py
+└── fonts/
+    └── NotoNaskhArabic-Regular.ttf
