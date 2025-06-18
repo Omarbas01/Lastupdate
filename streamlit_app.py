@@ -1,10 +1,11 @@
 import streamlit as st
+from fpdf import FPDF
 import os
 
-# إعداد صفحة Streamlit
+# إعداد واجهة الصفحة
 st.set_page_config(page_title="متابعة الصيانة - الرقيب", layout="centered")
 
-# تنسيق ألوان وخط متناسق مع الشعار
+# تنسيق CSS بسيط لتوحيد الخط والألوان
 st.markdown("""
     <style>
         body {
@@ -18,24 +19,22 @@ st.markdown("""
             color: white;
             font-weight: bold;
         }
-        input {
-            text-align: right;
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# عرض شعار الشركة
+# عرض الشعار
 st.image("logo.png", width=300)
 
 # عنوان التطبيق
 st.markdown("<h2 style='text-align: center;'>🔍 نظام متابعة الصيانة - الرقيب</h2>", unsafe_allow_html=True)
 st.markdown("#### الرجاء إدخال رقم الجوال أو رقم الفاتورة:")
 
-# حقل الإدخال
+# مدخل المستخدم
 user_input = st.text_input("", max_chars=15)
 
-# دالة استرجاع البيانات (مثال ثابت)
+# بيانات وهمية للاختبار – يمكنك ربطها بقاعدة بيانات لاحقاً
 def fetch_maintenance_data(input_value):
+    # مثال ثابت حسب الصورة التي أرسلتها
     return {
         "الاسم": "سلمان",
         "رقم الجوال": "0501762520",
@@ -44,12 +43,46 @@ def fetch_maintenance_data(input_value):
         "تحديث D365": "لا يوجد"
     }
 
+# إنشاء PDF من البيانات
+def generate_pdf(data):
+    pdf = FPDF()
+    pdf.add_page()
+
+    font_path = "fonts/NotoNaskhArabic-Regular.ttf"
+    if not os.path.exists(font_path):
+        st.error("خط Noto Naskh Arabic غير موجود في مجلد fonts/")
+        return None
+
+    pdf.add_font('Arabic', '', font_path, uni=True)
+    pdf.set_font('Arabic', '', 14)
+
+    pdf.cell(0, 10, txt="شركة حمد محمد الرقيب وأولاده التجارية", ln=True, align='R')
+    pdf.cell(0, 10, txt="متابعة حالة الصيانة", ln=True, align='R')
+    pdf.ln(10)
+
+    for key, value in data.items():
+        pdf.cell(0, 10, txt=f"{key}: {value}", ln=True, align='R')
+
+    pdf.output("maintenance_report.pdf")
+    return "maintenance_report.pdf"
+
 # عند الضغط على زر البحث
 if st.button("🔍 بحث"):
     if not user_input:
-        st.warning("يرجى إدخال رقم الجوال أو الفاتورة.")
+        st.warning("يرجى إدخال رقم الجوال أو رقم الفاتورة.")
     else:
         result = fetch_maintenance_data(user_input)
         st.markdown("---")
         for k, v in result.items():
             st.markdown(f"**{k}**: {v}")
+
+        # زر تحميل PDF
+        pdf_path = generate_pdf(result)
+        if pdf_path:
+            with open(pdf_path, "rb") as f:
+                st.download_button(
+                    label="📥 تحميل تقرير PDF",
+                    data=f,
+                    file_name="maintenance_report.pdf",
+                    mime="application/pdf"
+                )
