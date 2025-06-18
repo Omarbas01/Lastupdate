@@ -33,12 +33,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------- Logo Centered -----------
+# ----------- Centered Logo -----------
 try:
     logo = Image.open("logo.png")
     st.image(logo, width=400)
 except FileNotFoundError:
-    st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
+    st.warning("⚠️ 'logo.png' not found.")
 
 # ----------- Title & Input -----------
 st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
@@ -54,18 +54,21 @@ def load_data():
 df = load_data()
 
 # ----------- Convert Drive Link to Direct Image URL -----------
-def convert_drive_url_to_direct(link):
-    if pd.isna(link):
+def convert_drive_url_to_direct(cell_value):
+    if pd.isna(cell_value):
         return None
 
-    # Handle id=XXXX or /d/XXXX/
+    # Extract first link only if multiple exist
+    first_url = str(cell_value).split()[0]
+
+    # Extract file ID from different possible formats
     patterns = [
-        r"id=([a-zA-Z0-9_-]+)",
-        r"/d/([a-zA-Z0-9_-]+)"
+        r"id=([a-zA-Z0-9_-]{10,})",
+        r"/d/([a-zA-Z0-9_-]{10,})"
     ]
 
     for pattern in patterns:
-        match = re.search(pattern, link)
+        match = re.search(pattern, first_url)
         if match:
             file_id = match.group(1)
             return f"https://drive.google.com/uc?id={file_id}"
@@ -78,17 +81,16 @@ if st.button("Search"):
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
-            # Column mappings
-            phone_col = df.columns[19]      # T
-            invoice_col = df.columns[1]     # B
-            name_col = df.columns[2]        # C
-            address_col = df.columns[20]    # U
-            d365_col = df.columns[12]       # M
-            markup_col = df.columns[14]     # O
-            date_col = df.columns[15]       # P
-            info_col = df.columns[28]       # AC
-            part_img_col = df.columns[29]   # AD
-            problem_img_col = df.columns[30]# AE
+            phone_col = df.columns[19]       # T
+            invoice_col = df.columns[1]      # B
+            name_col = df.columns[2]         # C
+            address_col = df.columns[20]     # U
+            d365_col = df.columns[12]        # M
+            markup_col = df.columns[14]      # O
+            date_col = df.columns[15]        # P
+            info_col = df.columns[28]        # AC
+            part_img_col = df.columns[29]    # AD
+            problem_img_col = df.columns[30] # AE
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
@@ -110,17 +112,20 @@ if st.button("Search"):
 </div>
                     """, unsafe_allow_html=True)
 
-                    # Part Image
-                    part_img_url = convert_drive_url_to_direct(str(row[part_img_col]))
+                    # ----------- Display Picture of Part -----------
+                    part_img_url = convert_drive_url_to_direct(row[part_img_col])
                     if part_img_url:
                         st.markdown("📸 **Picture of Part**")
                         st.image(part_img_url, width=300)
+                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_url.split('=')[-1]}/view)", unsafe_allow_html=True)
 
-                    # Problem Image
-                    problem_img_url = convert_drive_url_to_direct(str(row[problem_img_col]))
+                    # ----------- Display Picture of Problem -----------
+                    problem_img_url = convert_drive_url_to_direct(row[problem_img_col])
                     if problem_img_url:
                         st.markdown("⚠️ **Picture of Problem**")
                         st.image(problem_img_url, width=300)
+                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_url.split('=')[-1]}/view)", unsafe_allow_html=True)
+
             else:
                 st.error("No matching record found.")
         except Exception as e:
