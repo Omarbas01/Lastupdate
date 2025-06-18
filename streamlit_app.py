@@ -1,12 +1,14 @@
 import streamlit as st
+import os
 
-# Page setup
-st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
+# إعداد صفحة Streamlit
+st.set_page_config(page_title="متابعة الصيانة - الرقيب", layout="centered")
 
-# Custom styling
+# تنسيق ألوان وخط متناسق مع الشعار
 st.markdown("""
     <style>
         body {
+            direction: rtl;
             font-family: 'Segoe UI', sans-serif;
             color: #222;
             background-color: #f9f9f9;
@@ -17,35 +19,35 @@ st.markdown("""
             font-weight: bold;
         }
         input {
-            text-align: left;
+            text-align: right;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# Display company logo
+# عرض شعار الشركة
 st.image("logo.png", width=300)
 
-# App title
-st.markdown("<h2 style='text-align: center;'>🔍 Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
-st.markdown("#### Please enter mobile number or invoice number:")
+# عنوان التطبيق
+st.markdown("<h2 style='text-align: center;'>🔍 نظام متابعة الصيانة - الرقيب</h2>", unsafe_allow_html=True)
+st.markdown("#### الرجاء إدخال رقم الجوال أو رقم الفاتورة:")
 
-# Input field
+# حقل الإدخال
 user_input = st.text_input("", max_chars=15)
 
-# Example data (replace with actual lookup logic)
+# دالة استرجاع البيانات (مثال ثابت)
 def fetch_maintenance_data(input_value):
     return {
-        "Name": "Salman",
-        "Mobile Number": "0501762520",
-        "Invoice Number": "SO000697361",
-        "Address": "Al-Ahsa, Al-Ghassaniyah",
-        "D365 Update": "Not Available"
+        "الاسم": "سلمان",
+        "رقم الجوال": "0501762520",
+        "رقم الفاتورة": "SO000697361",
+        "العنوان": "الاحساء، الغسانية",
+        "تحديث D365": "لا يوجد"
     }
 
-# Search button
-if st.button("🔍 Search"):
+# عند الضغط على زر البحث
+if st.button("🔍 بحث"):
     if not user_input:
-        st.warning("Please enter a mobile number or invoice number.")
+        st.warning("يرجى إدخال رقم الجوال أو الفاتورة.")
     else:
         result = fetch_maintenance_data(user_input)
         st.markdown("---")
