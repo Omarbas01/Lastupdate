@@ -37,7 +37,7 @@ try:
     logo = Image.open("logo.png")
     st.image(logo, width=400)
 except FileNotFoundError:
-    st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder as this app.")
+    st.warning("⚠️ 'logo.png' not found.")
 
 # ----------- Title & Input -----------
 st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
@@ -52,6 +52,14 @@ def load_data():
 
 df = load_data()
 
+# ----------- Helper: Convert Google Drive URL to direct image link -----------
+def convert_drive_url_to_direct(link):
+    try:
+        file_id = link.split("id=")[1]
+        return f"https://drive.google.com/uc?id={file_id}"
+    except:
+        return None
+
 # ----------- Search Logic -----------
 if st.button("Search"):
     if user_input.strip() == "":
@@ -65,6 +73,9 @@ if st.button("Search"):
             d365_col = df.columns[12]    # M
             markup_col = df.columns[14]  # O
             date_col = df.columns[15]    # P
+            info_col = df.columns[28]    # AC
+            part_img_col = df.columns[29]  # AD
+            problem_img_col = df.columns[30] # AE
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
@@ -80,10 +91,23 @@ if st.button("Search"):
 <b>Invoice Number:</b> {row[invoice_col]}<br>
 <b>Address:</b> {row[address_col]}<br>
 <b>D365 Update:</b> {row[d365_col]}<br>
-<b>Service Type (Markup):</b> {row[markup_col]}<br>
-<b>Scheduled Date:</b> {row[date_col]}
+<b>Service Type:</b> {row[markup_col]}<br>
+<b>Scheduled Date:</b> {row[date_col]}<br>
+<b>Extra Info:</b> {row[info_col]}<br>
 </div>
-                    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+
+                    # صور
+                    part_img = convert_drive_url_to_direct(str(row[part_img_col]))
+                    prob_img = convert_drive_url_to_direct(str(row[problem_img_col]))
+
+                    if part_img:
+                        st.markdown("📸 **Picture of Part**")
+                        st.image(part_img, width=300)
+
+                    if prob_img:
+                        st.markdown("⚠️ **Picture of Problem**")
+                        st.image(prob_img, width=300)
             else:
                 st.error("No matching record found.")
         except Exception as e:
