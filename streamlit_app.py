@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
+from PIL import Image
 
-# Page configuration
+# إعداد الصفحة
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 
-# ----------- Custom CSS Styling -----------
+# ----------- تنسيق CSS -----------
 st.markdown("""
     <style>
         body {
@@ -32,23 +33,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------- Centered Logo -----------
-from PIL import Image
+# ----------- شعار الشركة (بشكل صحيح) -----------
+try:
+    logo = Image.open("logo.png")
+    st.image(logo, width=400)
+except FileNotFoundError:
+    st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder as this app.")
 
-# Centered logo using st.image
-logo = Image.open("logo.png")
-st.image(logo, width=400)
-
-    unsafe_allow_html=True
-)
-
-# ----------- Title and Input -----------
+# ----------- عنوان وحقول الإدخال -----------
 st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 st.markdown("#### Enter Mobile Number or Invoice Number:")
-
 user_input = st.text_input("")
 
-# ----------- Load Data from Google Sheet -----------
+# ----------- تحميل البيانات من Google Sheet -----------
 @st.cache_data
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
@@ -56,18 +53,18 @@ def load_data():
 
 df = load_data()
 
-# ----------- Search Logic -----------
+# ----------- عملية البحث -----------
 if st.button("Search"):
     if user_input.strip() == "":
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
-            # Adjust column indices as per your sheet structure
-            phone_col = df.columns[19]   # Column T
-            invoice_col = df.columns[1]  # Column B
-            name_col = df.columns[2]     # Column C
-            address_col = df.columns[20] # Column U
-            d365_col = df.columns[12]    # Column M
+            # تأكد من الأعمدة الصحيحة حسب الجدول
+            phone_col = df.columns[19]   # T
+            invoice_col = df.columns[1]  # B
+            name_col = df.columns[2]     # C
+            address_col = df.columns[20] # U
+            d365_col = df.columns[12]    # M
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
@@ -88,7 +85,7 @@ if st.button("Search"):
             else:
                 st.error("No matching record found.")
         except Exception as e:
-            st.error(f"⚠️ An error occurred while processing data: {e}")
+            st.error(f"⚠️ Error reading data: {e}")
 
-# ----------- Footer -----------
+# ----------- التذييل -----------
 st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
