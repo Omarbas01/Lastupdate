@@ -65,6 +65,7 @@ if st.button("Search"):
             name_col = df.columns[2]     # C
             address_col = df.columns[20] # U
             d365_col = df.columns[12]    # M
+            eta_col = df .columns[14]    # O
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
