@@ -1,52 +1,53 @@
-
 import streamlit as st
-import pandas as pd
 
+# Page setup
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 
-st.title("🔍 Maintenance Tracker - Rugaib")
-st.markdown("Enter mobile number or invoice number:")
+# Custom styling
+st.markdown("""
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: #222;
+            background-color: #f9f9f9;
+        }
+        .stButton > button {
+            background-color: #cc0000;
+            color: white;
+            font-weight: bold;
+        }
+        input {
+            text-align: left;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-user_input = st.text_input("")
+# Display company logo
+st.image("logo.png", width=300)
 
-@st.cache_data
-def load_data():
-    url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
-    return pd.read_csv(url)
+# App title
+st.markdown("<h2 style='text-align: center;'>🔍 Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
+st.markdown("#### Please enter mobile number or invoice number:")
 
-df = load_data()
+# Input field
+user_input = st.text_input("", max_chars=15)
 
-if st.button("Search"):
-    if user_input.strip() == "":
+# Example data (replace with actual lookup logic)
+def fetch_maintenance_data(input_value):
+    return {
+        "Name": "Salman",
+        "Mobile Number": "0501762520",
+        "Invoice Number": "SO000697361",
+        "Address": "Al-Ahsa, Al-Ghassaniyah",
+        "D365 Update": "Not Available"
+    }
+
+# Search button
+if st.button("🔍 Search"):
+    if not user_input:
         st.warning("Please enter a mobile number or invoice number.")
     else:
-        phone_col = df.columns[19]   # T
-        invoice_col = df.columns[1]  # B
-        name_col = df.columns[2]     # C
-        address_col = df.columns[20] # U
-        d365_col = df.columns[12]    # M
-
-        result = df[
-            (df[phone_col].astype(str) == user_input) |
-            (df[invoice_col].astype(str) == user_input)
-        ]
-
-        if not result.empty:
-            for _, row in result.iterrows():
-                st.markdown("""
-**الاسم:** {}  
-**رقم الجوال:** {}  
-**رقم الفاتورة:** {}  
-**العنوان:** {}  
-**تحديث D365:** {}
-                """.format(
-                    row[name_col],
-                    row[phone_col],
-                    row[invoice_col],
-                    row[address_col],
-                    row[d365_col]
-                ))
-        else:
-            st.error("لم يتم العثور على نتائج مطابقة.")
-
-st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
+        result = fetch_maintenance_data(user_input)
+        st.markdown("---")
+        for k, v in result.items():
+            st.markdown(f"**{k}**: {v}")
