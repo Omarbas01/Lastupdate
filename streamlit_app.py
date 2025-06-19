@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
-import base64
 import re
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
@@ -36,7 +35,7 @@ st.markdown("""
 # ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
-    buffered = st.image(logo, width=250)
+    st.image(logo, width=250)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
@@ -44,7 +43,7 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
 # ----------- Input Section -----------
-user_input = st.text_input("🛠 Enter Mobile Number or Invoice Number:")
+user_input = st.text_input("🔎 Enter Mobile Number or Invoice Number:")
 
 # ----------- Refresh Button -----------
 if st.button("🔄 Refresh Data"):
@@ -66,7 +65,7 @@ def convert_drive_url_to_direct(cell_value):
 # ----------- Load Data Without Cache -----------
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
-    return pd.read_csv(url)
+    return pd.read_csv(url, header=0)
 
 # ----------- Search Button -----------
 if st.button("Search"):
@@ -74,23 +73,23 @@ if st.button("Search"):
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
-            with st.spinner("🛠️ Loading data..."):
+            with st.spinner("🔄 Loading data..."):
                 df = load_data()
 
-            # Column mappings
-            phone_col = df.columns[19]
-            invoice_col = df.columns[1]
-            name_col = df.columns[2]
-            address_col = df.columns[20]
-            d365_col = df.columns[12]
-            d365_so_col = df.columns[11]  # D365
-            markup_col = df.columns[14]
-            date_col = df.columns[15]
-            date_request_col = df.columns[10]  # 'Date| التاريخ'
-            info_col = df.columns[28]
-            part_img_col = df.columns[29]
-            problem_img_col = df.columns[30]
-            supervisor_col = df.columns[33]
+            # Column mappings by name
+            phone_col = "Mobile"
+            invoice_col = "Invoice Number | رقم الفاتورة"
+            name_col = "Pt Name | اسم العميل الأول"
+            address_col = "Address | العنوان"
+            d365_col = "D365 تحديث"
+            d365_so_col = "D365"
+            markup_col = "MarkupCode"
+            date_col = "Scheduled"
+            date_request_col = "Date | التاريخ"
+            info_col = "Info"
+            part_img_col = "Picture of Part"
+            problem_img_col = "Picture of Problem"
+            supervisor_col = "shift supervisor"
 
             # Optional service type filter
             unique_services = df[markup_col].dropna().unique()
@@ -115,16 +114,16 @@ if st.button("Search"):
 
                         st.markdown(f"""
 <div class='result-box'>
-<b> name:</b> {row[name_col]}<br>
-<b> Mobile:</b> {row[phone_col]}<br>
-<b> Invoice:</b> {row[invoice_col]}<br>
-<b> Address:</b> {row[address_col]}<br>
-<b> D365 Update:</b> {row[d365_col]}<br>
-<b> Service Type:</b> {row[markup_col]}<br>
-<b> Scheduled:</b> {row[date_col]}<br>
-<b> Request Date:</b> {request_date_str}<br>
-<b> Info:</b> {row[info_col]}<br>
-<b> Supervisor:</b> {row[supervisor_col]}
+<b>👤 Name:</b> {row[name_col]}<br>
+<b>📱 Mobile:</b> {row[phone_col]}<br>
+<b>🧾 Invoice:</b> {row[invoice_col]}<br>
+<b>📍 Address:</b> {row[address_col]}<br>
+<b>🔄 D365 Update:</b> {row[d365_col]}<br>
+<b>🛠️ Service Type:</b> {row[markup_col]}<br>
+<b>📅 Scheduled:</b> {row[date_col]}<br>
+<b>🗓️ Request Date:</b> {request_date_str}<br>
+<b>📝 Info:</b> {row[info_col]}<br>
+<b>👨‍🔧 Supervisor:</b> {row[supervisor_col]}
 </div>
                         """, unsafe_allow_html=True)
 
