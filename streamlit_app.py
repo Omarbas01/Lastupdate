@@ -90,8 +90,7 @@ if st.button("Search"):
             # Filtered results
             result = df[
                 df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
-                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)|
-                df[D365_col].astype(str).str.contains(user_input, case=False, na=False)
+                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
             ]
 
             if selected_service != "All":
