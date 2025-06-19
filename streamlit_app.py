@@ -77,7 +77,7 @@ if st.button("Search"):
                 df = load_data()
 
             # Column mappings by name
-            phone_col = "Mobile"
+            phone_col = "Phone Number | رقم الجوال"
             invoice_col = "Invoice Number | رقم الفاتورة"
             name_col = "Pt Name | اسم العميل الأول"
             address_col = "Address | العنوان"
@@ -114,35 +114,4 @@ if st.button("Search"):
 
                         st.markdown(f"""
 <div class='result-box'>
-<b>👤 Name:</b> {row[name_col]}<br>
-<b>📱 Mobile:</b> {row[phone_col]}<br>
-<b>🧾 Invoice:</b> {row[invoice_col]}<br>
-<b>📍 Address:</b> {row[address_col]}<br>
-<b>🔄 D365 Update:</b> {row[d365_col]}<br>
-<b>🛠️ Service Type:</b> {row[markup_col]}<br>
-<b>📅 Scheduled:</b> {row[date_col]}<br>
-<b>🗓️ Request Date:</b> {request_date_str}<br>
-<b>📝 Info:</b> {row[info_col]}<br>
-<b>👨‍🔧 Supervisor:</b> {row[supervisor_col]}
-</div>
-                        """, unsafe_allow_html=True)
-
-                        # Part Image
-                        part_img_id = convert_drive_url_to_direct(row[part_img_col])
-                        if part_img_id:
-                            st.markdown("📸 **Picture of Part:**")
-                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)")
-
-                        # Problem Image
-                        problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
-                        if problem_img_id:
-                            st.markdown("⚠️ **Picture of Problem:**")
-                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
-            else:
-                st.error("❌ No matching record found.")
-
-        except Exception as e:
-            st.error(f"⚠️ Error: {e}")
-
-# ----------- Footer -----------
-st.caption("© Hamad M. Al Rugaib & Sons Trading Co.")
+<b>👤 Name:<
