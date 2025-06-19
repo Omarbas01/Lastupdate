@@ -132,4 +132,4 @@ if st.button("Search"):
             st.error(f"⚠️ Error: {e}")
 
 # ----------- Footer -----------
-st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
+st.caption("© Hamad M. Al Rugaib & Sons Trading Co. –Maintenance Department")
