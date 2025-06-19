@@ -23,23 +23,13 @@ st.markdown("""
             border: 1px solid #e0e0e0;
             margin-bottom: 10px;
         }
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-top: -40px;
-            margin-bottom: 10px;
-        }
     </style>
 """, unsafe_allow_html=True)
 
 # ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
-    st.markdown("""
-        <div class='logo-container'>
-            <img src='data:image/png;base64,{}' width='250'>
-        </div>
-    """.format(Image.open("logo.png").convert("RGB").tobytes().hex()), unsafe_allow_html=True)
+    st.image(logo, width=400)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
@@ -88,8 +78,6 @@ if st.button("Search"):
             d365_col = df.columns[12]
             markup_col = df.columns[14]
             date_col = df.columns[15]
-            date_request_col = df.columns[10]
-date_request_col = df.columns[10]  # Assuming 'Date| التاريخ' is column 10
             info_col = df.columns[28]
             part_img_col = df.columns[29]
             problem_img_col = df.columns[30]
@@ -121,7 +109,6 @@ date_request_col = df.columns[10]  # Assuming 'Date| التاريخ' is column 1
 <b>🔄 D365 Update:</b> {row[d365_col]}<br>
 <b>🛠️ Service Type:</b> {row[markup_col]}<br>
 <b>📅 Scheduled:</b> {row[date_col]}<br>
-<b>🗓️ Request Date:</b> {row[date_request_col]}<br>
 <b>📝 Info:</b> {row[info_col]}<br>
 <b>👨‍🔧 Supervisor:</b> {row[supervisor_col]}
 </div>
