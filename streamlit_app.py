@@ -67,7 +67,7 @@ if st.button("Search"):
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
-            with st.spinner("🔄 Loading data..."):
+            with st.spinner("🛠️ Loading data..."):
                 df = load_data()
 
             # Column mappings
