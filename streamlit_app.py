@@ -8,11 +8,6 @@ st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 # ----------- CSS Styling -----------
 st.markdown("""
     <style>
-        body {
-            background-color: #f9f9f9;
-            font-family: 'Segoe UI', sans-serif;
-            color: #333;
-        }
         .stButton > button {
             background-color: #000000;
             color: white;
@@ -23,13 +18,10 @@ st.markdown("""
         .result-box {
             background-color: #ffffff;
             color: #000000;
-            padding: 20px;
+            padding: 10px;
             border-radius: 10px;
             border: 1px solid #e0e0e0;
-            margin-top: 20px;
-        }
-        h2 {
-            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -41,93 +33,103 @@ try:
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
-# ----------- Title & Input -----------
-st.markdown("<h2>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
-st.markdown("#### Enter Mobile Number or Invoice Number:")
-user_input = st.text_input("")
+# ----------- Title -----------
+st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
-# ----------- Load Data -----------
-@st.cache_data
-def load_data():
-    url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
-    return pd.read_csv(url)
+# ----------- Input Section -----------
+user_input = st.text_input("🔎 Enter Mobile Number or Invoice Number:")
 
-df = load_data()
+# ----------- Refresh Button -----------
+if st.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.success("✅ Data refreshed. Please click Search again.")
 
-# ----------- Convert Google Drive URL to Direct Image ID -----------
+# ----------- Google Drive Link Cleaner -----------
 def convert_drive_url_to_direct(cell_value):
     if pd.isna(cell_value):
         return None
-
     first_url = str(cell_value).split()[0]
-    patterns = [
-        r"id=([a-zA-Z0-9_-]{10,})",
-        r"/d/([a-zA-Z0-9_-]{10,})"
-    ]
-
+    patterns = [r"id=([a-zA-Z0-9_-]{10,})", r"/d/([a-zA-Z0-9_-]{10,})"]
     for pattern in patterns:
         match = re.search(pattern, first_url)
         if match:
             return match.group(1)
-
     return None
 
-# ----------- Search Logic -----------
+# ----------- Load Data Without Cache -----------
+def load_data():
+    url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
+    return pd.read_csv(url)
+
+# ----------- Search Button -----------
 if st.button("Search"):
     if user_input.strip() == "":
         st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
-            # Adjust column indices
-            phone_col = df.columns[19]       # T
-            invoice_col = df.columns[1]      # B
-            name_col = df.columns[2]         # C
-            address_col = df.columns[20]     # U
-            d365_col = df.columns[12]        # M
-            markup_col = df.columns[14]      # O
-            date_col = df.columns[15]        # P
-            info_col = df.columns[28]        # AC
-            part_img_col = df.columns[29]    # AD
-            problem_img_col = df.columns[30] # AE
-            supervisor_col = df.columns[33]  # AH
+            with st.spinner("🔄 Loading data..."):
+                df = load_data()
 
+            # Column mappings
+            phone_col = df.columns[19]
+            invoice_col = df.columns[1]
+            name_col = df.columns[2]
+            address_col = df.columns[20]
+            d365_col = df.columns[12]
+            markup_col = df.columns[14]
+            date_col = df.columns[15]
+            info_col = df.columns[28]
+            part_img_col = df.columns[29]
+            problem_img_col = df.columns[30]
+            supervisor_col = df.columns[33]
+
+            # Optional service type filter
+            unique_services = df[markup_col].dropna().unique()
+            selected_service = st.selectbox("📂 Filter by Service Type (Optional):", ["All"] + list(unique_services))
+
+            # Filtered results
             result = df[
-                (df[phone_col].astype(str) == user_input) |
-                (df[invoice_col].astype(str) == user_input)
+                df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
+                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
             ]
 
+            if selected_service != "All":
+                result = result[result[markup_col] == selected_service]
+
             if not result.empty:
+                st.success(f"✅ {len(result)} record(s) found.")
                 for _, row in result.iterrows():
-                    st.markdown(f"""
+                    with st.expander(f"🔍 Result for Invoice: {row[invoice_col]}"):
+                        st.markdown(f"""
 <div class='result-box'>
-<b>Name:</b> {row[name_col]}<br>
-<b>Mobile Number:</b> {row[phone_col]}<br>
-<b>Invoice Number:</b> {row[invoice_col]}<br>
-<b>Address:</b> {row[address_col]}<br>
-<b>D365 Update:</b> {row[d365_col]}<br>
-<b>Service Type:</b> {row[markup_col]}<br>
-<b>Scheduled Date:</b> {row[date_col]}<br>
-<b>Extra Info:</b> {row[info_col]}<br>
-<b>Shift Supervisor:</b> {row[supervisor_col]}
+<b>👤 Name:</b> {row[name_col]}<br>
+<b>📱 Mobile:</b> {row[phone_col]}<br>
+<b>🧾 Invoice:</b> {row[invoice_col]}<br>
+<b>📍 Address:</b> {row[address_col]}<br>
+<b>🔄 D365 Update:</b> {row[d365_col]}<br>
+<b>🛠️ Service Type:</b> {row[markup_col]}<br>
+<b>📅 Scheduled:</b> {row[date_col]}<br>
+<b>📝 Info:</b> {row[info_col]}<br>
+<b>👨‍🔧 Supervisor:</b> {row[supervisor_col]}
 </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
 
-                    # ----------- Picture of Part (link only)
-                    part_img_id = convert_drive_url_to_direct(row[part_img_col])
-                    if part_img_id:
-                        st.markdown("📸 **Picture of Part**")
-                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)", unsafe_allow_html=True)
+                        # Part Image
+                        part_img_id = convert_drive_url_to_direct(row[part_img_col])
+                        if part_img_id:
+                            st.markdown("📸 **Picture of Part:**")
+                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)")
 
-                    # ----------- Picture of Problem (link only)
-                    problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
-                    if problem_img_id:
-                        st.markdown("⚠️ **Picture of Problem**")
-                        st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)", unsafe_allow_html=True)
-
+                        # Problem Image
+                        problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
+                        if problem_img_id:
+                            st.markdown("⚠️ **Picture of Problem:**")
+                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
             else:
-                st.error("No matching record found.")
+                st.error("❌ No matching record found.")
+
         except Exception as e:
-            st.error(f"⚠️ Error reading data: {e}")
+            st.error(f"⚠️ Error: {e}")
 
 # ----------- Footer -----------
 st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
