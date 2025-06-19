@@ -47,7 +47,7 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
 # ----------- Input Section -----------
-user_input = st.text_input("Enter Mobile Number or Invoice Number:")
+user_input = st.text_input("🔎 Enter Mobile Number or Invoice Number:")
 
 # ----------- Refresh Button -----------
 if st.button("🔄 Refresh Data"):
@@ -81,7 +81,6 @@ if st.button("Search"):
                 df = load_data()
 
             # Column mappings
-# Column mappings
             phone_col = df.columns[19]
             invoice_col = df.columns[1]
             name_col = df.columns[2]
@@ -89,6 +88,7 @@ if st.button("Search"):
             d365_col = df.columns[12]
             markup_col = df.columns[14]
             date_col = df.columns[15]
+            date_request_col = df.columns[10]
 date_request_col = df.columns[10]  # Assuming 'Date| التاريخ' is column 10
             info_col = df.columns[28]
             part_img_col = df.columns[29]
@@ -114,16 +114,16 @@ date_request_col = df.columns[10]  # Assuming 'Date| التاريخ' is column 1
                     with st.expander(f"🔍 Result for Invoice: {row[invoice_col]}"):
                         st.markdown(f"""
 <div class='result-box'>
-<b> Name:</b> {row[name_col]}<br>
-<b> Mobile:</b> {row[phone_col]}<br>
-<b> Invoice:</b> {row[invoice_col]}<br>
-<b> Address:</b> {row[address_col]}<br>
-<b> D365 Update:</b> {row[d365_col]}<br>
-<b> Service Type:</b> {row[markup_col]}<br>
-<b> Scheduled:</b> {row[date_col]}<br>
-<b> Request Date:</b> {row[date_request_col]}<br>
-<b> Info:</b> {row[info_col]}<br>
-<b> Supervisor:</b> {row[supervisor_col]}
+<b>👤 Name:</b> {row[name_col]}<br>
+<b>📱 Mobile:</b> {row[phone_col]}<br>
+<b>🧾 Invoice:</b> {row[invoice_col]}<br>
+<b>📍 Address:</b> {row[address_col]}<br>
+<b>🔄 D365 Update:</b> {row[d365_col]}<br>
+<b>🛠️ Service Type:</b> {row[markup_col]}<br>
+<b>📅 Scheduled:</b> {row[date_col]}<br>
+<b>🗓️ Request Date:</b> {row[date_request_col]}<br>
+<b>📝 Info:</b> {row[info_col]}<br>
+<b>👨‍🔧 Supervisor:</b> {row[supervisor_col]}
 </div>
                         """, unsafe_allow_html=True)
 
