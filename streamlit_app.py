@@ -44,7 +44,7 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
 # ----------- Input Section -----------
-user_input = st.text_input("🔎 Enter Mobile Number or Invoice Number:")
+user_input = st.text_input("🛠 Enter Mobile Number or Invoice Number:")
 
 # ----------- Refresh Button -----------
 if st.button("🔄 Refresh Data"):
