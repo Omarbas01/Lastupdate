@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
+import base64
 import re
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
@@ -23,13 +24,19 @@ st.markdown("""
             border: 1px solid #e0e0e0;
             margin-bottom: 10px;
         }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: -40px;
+            margin-bottom: 10px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 # ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
-    st.image(logo, width=400)
+    buffered = st.image(logo, width=250)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
@@ -37,7 +44,7 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
 # ----------- Input Section -----------
-user_input = st.text_input(" Enter Mobile Number or Invoice Number:")
+user_input = st.text_input("🔎 Enter Mobile Number or Invoice Number:")
 
 # ----------- Refresh Button -----------
 if st.button("🔄 Refresh Data"):
@@ -76,8 +83,10 @@ if st.button("Search"):
             name_col = df.columns[2]
             address_col = df.columns[20]
             d365_col = df.columns[12]
+            d365_so_col = df.columns[11]  # D365
             markup_col = df.columns[14]
             date_col = df.columns[15]
+            date_request_col = df.columns[10]  # 'Date| التاريخ'
             info_col = df.columns[28]
             part_img_col = df.columns[29]
             problem_img_col = df.columns[30]
@@ -90,7 +99,8 @@ if st.button("Search"):
             # Filtered results
             result = df[
                 df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
-                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
+                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False) |
+                df[d365_so_col].astype(str).str.contains(user_input, case=False, na=False)
             ]
 
             if selected_service != "All":
@@ -99,16 +109,20 @@ if st.button("Search"):
             if not result.empty:
                 st.success(f"✅ {len(result)} record(s) found.")
                 for _, row in result.iterrows():
-                    with st.expander(f" Result for Invoice: {row[invoice_col]}"):
+                    with st.expander(f"🔍 Result for Invoice: {row[invoice_col]}"):
+                        request_date = pd.to_datetime(row[date_request_col], errors='coerce')
+                        request_date_str = request_date.strftime('%d/%m/%Y') if not pd.isna(request_date) else 'N/A'
+
                         st.markdown(f"""
 <div class='result-box'>
-<b> Name:</b> {row[name_col]}<br>
+<b> name:</b> {row[name_col]}<br>
 <b> Mobile:</b> {row[phone_col]}<br>
 <b> Invoice:</b> {row[invoice_col]}<br>
 <b> Address:</b> {row[address_col]}<br>
 <b> D365 Update:</b> {row[d365_col]}<br>
 <b> Service Type:</b> {row[markup_col]}<br>
 <b> Scheduled:</b> {row[date_col]}<br>
+<b> Request Date:</b> {request_date_str}<br>
 <b> Info:</b> {row[info_col]}<br>
 <b> Supervisor:</b> {row[supervisor_col]}
 </div>
@@ -132,4 +146,4 @@ if st.button("Search"):
             st.error(f"⚠️ Error: {e}")
 
 # ----------- Footer -----------
-st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Powered by Streamlit")
+st.caption("© Hamad M. Al Rugaib & Sons Trading Co.")
