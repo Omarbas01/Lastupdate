@@ -90,10 +90,11 @@ if st.button("Search"):
             part_img_col = df.columns[29]    # AD
             problem_img_col = df.columns[30] # AE
             supervisor_col = df.columns[33]  # AH
-
+            D365_col = df.columns[11]  # l
             result = df[
                 (df[phone_col].astype(str) == user_input) |
-                (df[invoice_col].astype(str) == user_input)
+                (df[invoice_col].astype(str) == user_input) |
+                (df[D365_col].astype(str) == user_input)
             ]
 
             if not result.empty:
