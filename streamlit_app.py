@@ -103,7 +103,7 @@ if st.button("Search"):
                     with st.expander(f"Result for Invoice: {row[invoice_col]}"):
                         st.markdown(f"""
 <div class='result-box'>
-<b> Reuest Date:</b> {row[name_col]}<br>
+<b> Reuest Date:</b> {row[Date_col]}<br>
 <b> Name:</b> {row[name_col]}<br>
 <b> Mobile:</b> {row[phone_col]}<br>
 <b> Invoice:</b> {row[invoice_col]}<br>
