@@ -89,7 +89,7 @@ if st.button("Search"):
             info_col = df.columns[28]        # AC
             part_img_col = df.columns[29]    # AD
             problem_img_col = df.columns[30] # AE
-            supervisor_col = df.columns[32]  # AH
+            supervisor_col = df.columns[33]  # AH
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
