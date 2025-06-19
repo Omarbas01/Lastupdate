@@ -90,11 +90,11 @@ if st.button("Search"):
             part_img_col = df.columns[29]    # AD
             problem_img_col = df.columns[30] # AE
             supervisor_col = df.columns[33]  # AH
-            D365_col = df.columns[11]  # l
+
+            # ✅ Partial match search
             result = df[
-                (df[phone_col].astype(str) == user_input) |
-                (df[invoice_col].astype(str) == user_input) |
-                (df[D365_col].astype(str) == user_input)
+                df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
+                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
             ]
 
             if not result.empty:
