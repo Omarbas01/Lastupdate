@@ -71,6 +71,7 @@ if st.button("Search"):
                 df = load_data()
 
             # Column mappings
+            Request_col = df.columns[1]
             phone_col = df.columns[19]
             invoice_col = df.columns[1]
             name_col = df.columns[2]
