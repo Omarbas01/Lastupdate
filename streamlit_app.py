@@ -23,13 +23,23 @@ st.markdown("""
             border: 1px solid #e0e0e0;
             margin-bottom: 10px;
         }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: -40px;
+            margin-bottom: 10px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 # ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
-    st.image(logo, width=400)
+    st.markdown("""
+        <div class='logo-container'>
+            <img src='data:image/png;base64,{}' width='250'>
+        </div>
+    """.format(Image.open("logo.png").convert("RGB").tobytes().hex()), unsafe_allow_html=True)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
