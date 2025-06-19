@@ -22,7 +22,7 @@ st.markdown("""
         }
         .result-box {
             background-color: #ffffff;
-            color: #000000;  /* ✅ هذا يضمن أن النص يظهر حتى في الوضع الليلي */
+            color: #000000;
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #e0e0e0;
@@ -89,6 +89,7 @@ if st.button("Search"):
             info_col = df.columns[28]        # AC
             part_img_col = df.columns[29]    # AD
             problem_img_col = df.columns[30] # AE
+            supervisor_col = df.columns[33]  # AH
 
             result = df[
                 (df[phone_col].astype(str) == user_input) |
@@ -106,7 +107,8 @@ if st.button("Search"):
 <b>D365 Update:</b> {row[d365_col]}<br>
 <b>Service Type:</b> {row[markup_col]}<br>
 <b>Scheduled Date:</b> {row[date_col]}<br>
-<b>Extra Info:</b> {row[info_col]}
+<b>Extra Info:</b> {row[info_col]}<br>
+<b>Shift Supervisor:</b> {row[supervisor_col]}
 </div>
                     """, unsafe_allow_html=True)
 
