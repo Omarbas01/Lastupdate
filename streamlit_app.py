@@ -9,19 +9,33 @@ st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 st.markdown("""
     <style>
         .stButton > button {
-            background-color: #000000;
-            color: white;
-            font-weight: bold;
-            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 24px;
             border-radius: 8px;
+            border: none;
+        }
+        input[type="text"] {
+            border: 2px solid #ccc;
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
         }
         .result-box {
-            background-color: #ffffff;
-            color: #000000;
-            padding: 10px;
+            background-color: #f9f9f9;
+            color: #000;
+            padding: 12px;
             border-radius: 10px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .stTextInput>div>div>input {
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 16px;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -29,12 +43,12 @@ st.markdown("""
 # ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
-    st.image(logo, width=400)
+    st.image(logo, width=350)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
 # ----------- Title -----------
-st.markdown("<h2 style='text-align:center;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center; font-family:sans-serif;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
 # ----------- Input Section -----------
 user_input = st.text_input(" Enter Mobile Number or Invoice Number:")
@@ -104,7 +118,7 @@ if st.button("Search"):
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
             date_col = "Date" if "Scheduled" in df.columns else df.columns[14]
-            info_col = "التقييم" if "Info" in df.columns else df. columns[2]
+            info_col = "التقييم" if "Info" in df.columns else df.columns[2]
             part_img_col = "Picture of Part" if "Part Image" in df.columns else df.columns[26]
             problem_img_col = "Problem Image" if "Problem Image" in df.columns else df.columns[27]
             supervisor_col = "Supervisor" if "Supervisor" in df.columns else None
@@ -157,4 +171,4 @@ if st.button("Search"):
             st.error(f"⚠️ Error: {e}")
 
 # ----------- Footer -----------
-st.caption("© Hamad M. Al Rugaib & Sons Trading Co. –Maintenance Department")
+st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Maintenance Department")
