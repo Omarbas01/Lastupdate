@@ -98,11 +98,11 @@ def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
     return pd.read_csv(url, encoding="utf-8")
 
-start_datetime = st.datetime_input("📅 Start Timestamp Filter (Optional):")
-end_datetime = st.datetime_input("📅 End Timestamp Filter (Optional):")
+start_ts = st.text_input("📅 Start Timestamp Filter (Optional) (e.g., 2025-06-01 00:00:00):")
+end_ts = st.text_input("📅 End Timestamp Filter (Optional) (e.g., 2025-07-20 23:59:59):")
 
 if st.button("Search"):
-    if not user_input.strip() and not start_datetime and not end_datetime:
+    if not user_input.strip() and not start_ts and not end_ts:
         st.warning("Please enter a mobile number, invoice number, or select a timestamp filter.")
     else:
         try:
@@ -120,12 +120,7 @@ if st.button("Search"):
             address_col = "Address | العنوان" if "العنوان" in df.columns else df.columns[18]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
-            if "Timestamp" in df.columns:
-                date_col = "Timestamp"
-            elif "Date" in df.columns:
-                date_col = "Date"
-            else:
-                date_col = df.columns[14]
+            date_col = "Timestamp" if "Timestamp" in df.columns else "Date" if "Date" in df.columns else df.columns[14]
             info_col = "التقييم" if "Info" in df.columns else df.columns[2]
             part_img_col = "Picture of Part" if "Part Image" in df.columns else df.columns[26]
             problem_img_col = "Problem Image" if "Problem Image" in df.columns else df.columns[27]
@@ -148,10 +143,18 @@ if st.button("Search"):
 
             result[date_col] = pd.to_datetime(result[date_col], errors='coerce')
 
-            if start_datetime:
-                result = result[result[date_col] >= start_datetime]
-            if end_datetime:
-                result = result[result[date_col] <= end_datetime]
+            if start_ts:
+                try:
+                    start_datetime = pd.to_datetime(start_ts)
+                    result = result[result[date_col] >= start_datetime]
+                except Exception as e:
+                    st.warning(f"⚠️ Invalid start timestamp format: {e}")
+            if end_ts:
+                try:
+                    end_datetime = pd.to_datetime(end_ts)
+                    result = result[result[date_col] <= end_datetime]
+                except Exception as e:
+                    st.warning(f"⚠️ Invalid end timestamp format: {e}")
 
             if not result.empty:
                 st.success(f"✅ {len(result)} record(s) found.")
