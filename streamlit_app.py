@@ -56,6 +56,15 @@ def convert_drive_url_to_direct(cell_value):
             return match.group(1)
     return None
 
+# ----------- Detect Mobile Column -----------
+def detect_mobile_column(df):
+    for col in df.columns:
+        sample = df[col].astype(str).str.strip().dropna().head(100)
+        matches = sample[sample.str.match(r"^05[0-9]{8}$")]
+        if len(matches) > 3:
+            return col
+    return None
+
 # ----------- Load Data Without Cache -----------
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
@@ -64,24 +73,20 @@ def load_data():
 # ----------- Search Button -----------
 if st.button("Search"):
     if user_input.strip() == "":
-        st.warning("Please enter a Phone Number or invoice number.")
+        st.warning("Please enter a mobile number or invoice number.")
     else:
         try:
             with st.spinner("🛠️ Loading data..."):
                 df = load_data()
 
-            expected_cols = [
-                "Invoice Number", "Phone Number", "الاسم", "Address", "D365", "MarkupCode", "Scheduled", "Info", "Part Image", "Problem Image", "Supervisor"
-            ]
+            invoice_col = "Invoice Number" if "Invoice Number" in df.columns else df.columns[1]
+            phone_col = detect_mobile_column(df)
 
-            for col in ["Invoice Number", "Mobile"]:
-                if col not in df.columns:
-                    st.error(f"❌ Column '{col}' not found in data.")
-                    st.stop()
+            if not phone_col:
+                st.error("❌ Could not detect mobile number column. Please check the sheet.")
+                st.stop()
 
-            invoice_col = "Invoice Number"
-            phone_col = "Phone Number"
-            name_col = "الاسم"
+            name_col = "الاسم" if "الاسم" in df.columns else df.columns[2]
             address_col = "Address" if "Address" in df.columns else df.columns[20]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
