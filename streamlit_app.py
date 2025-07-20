@@ -75,7 +75,7 @@ if st.button("Search"):
             invoice_col = df.columns[1]
             name_col = df.columns[2]
             address_col = df.columns[20]
-            d365_col = df.columns[12]
+            d365_col = df.columns[10]
             markup_col = df.columns[14]
             date_col = df.columns[15]
             info_col = df.columns[28]
@@ -83,11 +83,9 @@ if st.button("Search"):
             problem_img_col = df.columns[30]
             supervisor_col = df.columns[33]
 
-            # Optional service type filter
             unique_services = df[markup_col].dropna().unique()
             selected_service = st.selectbox("📂 Filter by Service Type (Optional):", ["All"] + list(unique_services))
 
-            # Filtered results
             result = df[
                 df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
                 df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
@@ -114,13 +112,11 @@ if st.button("Search"):
 </div>
                         """, unsafe_allow_html=True)
 
-                        # Part Image
                         part_img_id = convert_drive_url_to_direct(row[part_img_col])
                         if part_img_id:
                             st.markdown("📸 **Picture of Part:**")
                             st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)")
 
-                        # Problem Image
                         problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
                         if problem_img_id:
                             st.markdown("⚠️ **Picture of Problem:**")
