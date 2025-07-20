@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import re
+import io
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 
@@ -164,6 +165,15 @@ if st.button("Search"):
                             if problem_img_id:
                                 st.markdown("⚠️ **Picture of Problem:**")
                                 st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
+
+                # ----------- Export Button -----------
+                csv = result.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="📄 Download Report as CSV",
+                    data=csv,
+                    file_name="maintenance_report.csv",
+                    mime="text/csv",
+                )
             else:
                 st.error("❌ No matching record found.")
 
