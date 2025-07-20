@@ -58,7 +58,7 @@ def convert_drive_url_to_direct(cell_value):
 
 # ----------- Load Data Without Cache -----------
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/1MitHqD5SZfm-yAUsrc8jkki7zD9zFlH1JXhHTKjfAhs/export?format=csv&gid=2031108065"
+    url = "https://https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/edit?gid=1295915446#gid=1295915446"
     return pd.read_csv(url)
 
 # ----------- Search Button -----------
