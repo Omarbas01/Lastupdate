@@ -106,8 +106,8 @@ end_date = st.date_input("📅 End Date Filter (Optional):", value=None)
 
 # ----------- Search Button -----------
 if st.button("Search"):
-    if user_input.strip() == "":
-        st.warning("Please enter a mobile number or invoice number.")
+    if not user_input.strip() and not start_date and not end_date:
+        st.warning("Please enter a mobile number, invoice number, or select a date filter.")
     else:
         try:
             with st.spinner("🛠️ Loading data..."):
@@ -133,11 +133,14 @@ if st.button("Search"):
             unique_services = df[markup_col].dropna().unique()
             selected_service = st.selectbox("📂 Filter by Service Type (Optional):", ["All"] + list(unique_services))
 
-            query = user_input.strip().lower()
-            result = df[
-                df[phone_col].astype(str).str.strip().str.lower().str.contains(query, na=False) |
-                df[invoice_col].astype(str).str.strip().str.lower().str.contains(query, na=False)
-            ]
+            result = df
+
+            if user_input.strip():
+                query = user_input.strip().lower()
+                result = result[
+                    result[phone_col].astype(str).str.strip().str.lower().str.contains(query, na=False) |
+                    result[invoice_col].astype(str).str.strip().str.lower().str.contains(query, na=False)
+                ]
 
             if selected_service != "All":
                 result = result[result[markup_col] == selected_service]
