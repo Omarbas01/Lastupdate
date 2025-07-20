@@ -99,7 +99,7 @@ if st.button("Search"):
                 st.error("❌ Could not detect mobile number column. Please check the sheet.")
                 st.stop()
 
-            name_col = "الاسم" if "الاسم" in df.columns else df.columns[2]
+            name_col = "First Name " if "الاسم الأول" in df.columns else df.columns[4]
             address_col = "Address" if "Address" in df.columns else df.columns[20]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
