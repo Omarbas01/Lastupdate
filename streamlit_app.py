@@ -74,9 +74,9 @@ if st.button("Search"):
                 st.error("❌ Not enough columns in the data to proceed.")
             else:
                 # Column mappings
-                phone_col = df.columns[19]
-                invoice_col = df.columns[1]
-                name_col = df.columns[1]
+                phone_col = df.columns[18]
+                invoice_col = df.columns[2]
+                name_col = df.columns[4]
                 address_col = df.columns[19]
                 d365_col = df.columns[12]
                 markup_col = df.columns[14]
