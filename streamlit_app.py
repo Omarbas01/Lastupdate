@@ -80,7 +80,7 @@ if st.button("Search"):
                     st.stop()
 
             invoice_col = "Invoice Number"
-            phone_col = "Mobile"
+            phone_col = "Phone Number"
             name_col = "الاسم"
             address_col = "Address" if "Address" in df.columns else df.columns[20]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
