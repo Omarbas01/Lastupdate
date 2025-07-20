@@ -57,9 +57,9 @@ def convert_drive_url_to_direct(cell_value):
     return None
 
 # ----------- Detect Mobile Column -----------
-def detect_mobile_column(df):
-    for col in df.columns:
-        sample = df[col].astype(str).str.strip().dropna().head(100)
+def detect_mobile_column(r):
+    for col in r.columns:
+        sample = r[col].astype(str).str.strip().dropna().head(100)
         matches = sample[sample.str.match(r"^05[0-9]{8}$")]
         if len(matches) > 3:
             return col
