@@ -64,14 +64,14 @@ def load_data():
 # ----------- Search Button -----------
 if st.button("Search"):
     if user_input.strip() == "":
-        st.warning("Please enter a mobile number or invoice number.")
+        st.warning("Please enter a Phone Number or invoice number.")
     else:
         try:
             with st.spinner("🛠️ Loading data..."):
                 df = load_data()
 
             expected_cols = [
-                "Invoice Number", "Mobile", "الاسم", "Address", "D365", "MarkupCode", "Scheduled", "Info", "Part Image", "Problem Image", "Supervisor"
+                "Invoice Number", "Phone Number", "الاسم", "Address", "D365", "MarkupCode", "Scheduled", "Info", "Part Image", "Problem Image", "Supervisor"
             ]
 
             for col in ["Invoice Number", "Mobile"]:
