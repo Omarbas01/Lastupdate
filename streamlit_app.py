@@ -76,9 +76,9 @@ if st.button("Search"):
                 # Column mappings
                 phone_col = df.columns[19]
                 invoice_col = df.columns[1]
-                name_col = df.columns[2]
-                address_col = df.columns[20]
-                d365_col = df.columns[10]
+                name_col = df.columns[1]
+                address_col = df.columns[19]
+                d365_col = df.columns[12]
                 markup_col = df.columns[14]
                 date_col = df.columns[15]
                 info_col = df.columns[28] if df.shape[1] > 28 else None
