@@ -3,6 +3,9 @@ import pandas as pd
 from PIL import Image
 import re
 import io
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+from datetime import datetime
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 
@@ -98,6 +101,10 @@ def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
     return pd.read_csv(url, encoding="utf-8")
 
+# ----------- Date Filter -----------
+start_date = st.date_input("📅 Start Date Filter (Optional):", value=None)
+end_date = st.date_input("📅 End Date Filter (Optional):", value=None)
+
 # ----------- Search Button -----------
 if st.button("Search"):
     if user_input.strip() == "":
@@ -136,6 +143,11 @@ if st.button("Search"):
             if selected_service != "All":
                 result = result[result[markup_col] == selected_service]
 
+            if start_date:
+                result = result[pd.to_datetime(result[date_col], errors='coerce') >= pd.to_datetime(start_date)]
+            if end_date:
+                result = result[pd.to_datetime(result[date_col], errors='coerce') <= pd.to_datetime(end_date)]
+
             if not result.empty:
                 st.success(f"✅ {len(result)} record(s) found.")
                 for _, row in result.iterrows():
@@ -171,7 +183,11 @@ if st.button("Search"):
                 st.markdown("### 📁 Download Report")
                 output = io.BytesIO()
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
-                    result.to_excel(writer, index=False, encoding="utf-8")
+                    result.to_excel(writer, index=False, sheet_name="Maintenance Report")
+                    worksheet = writer.sheets["Maintenance Report"]
+                    for cell in worksheet[1]:
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(horizontal="center")
                 st.download_button(
                     label="📄 Download Report as Excel",
                     data=output.getvalue(),
