@@ -70,6 +70,14 @@ def detect_mobile_column(df):
             return col
     return None
 
+# ----------- Detect Invoice Column -----------
+def detect_invoice_column(df):
+    for col in df.columns:
+        sample = df[col].astype(str).str.strip().dropna().head(100)
+        if sample.str.match(r"SO[0-9]{9}").any():
+            return col
+    return df.columns[1]
+
 # ----------- Load Data Without Cache -----------
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
@@ -84,7 +92,7 @@ if st.button("Search"):
             with st.spinner("🛠️ Loading data..."):
                 df = load_data()
 
-            invoice_col = "Invoice Number" if "Invoice Number" in df.columns else df.columns[1]
+            invoice_col = detect_invoice_column(df)
             phone_col = detect_mobile_column(df)
 
             if not phone_col:
