@@ -189,9 +189,11 @@ if st.button("Search"):
                     for col_num, value in enumerate(result.columns.values):
                         worksheet.write(0, col_num, value, header_format)
                         worksheet.set_column(col_num, col_num, 20)
+                    writer.close()
+                output.seek(0)
                 st.download_button(
                     label="📄 Download Report as Excel",
-                    data=output.getvalue(),
+                    data=output,
                     file_name="maintenance_report.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
