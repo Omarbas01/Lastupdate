@@ -70,35 +70,38 @@ if st.button("Search"):
             with st.spinner("🛠️ Loading data..."):
                 df = load_data()
 
-            # Column mappings
-            phone_col = df.columns[19]
-            invoice_col = df.columns[1]
-            name_col = df.columns[2]
-            address_col = df.columns[20]
-            d365_col = df.columns[10]
-            markup_col = df.columns[14]
-            date_col = df.columns[15]
-            info_col = df.columns[28]
-            part_img_col = df.columns[29]
-            problem_img_col = df.columns[30]
-            supervisor_col = df.columns[33]
+            if df.shape[1] < 21:
+                st.error("❌ Not enough columns in the data to proceed.")
+            else:
+                # Column mappings
+                phone_col = df.columns[19]
+                invoice_col = df.columns[1]
+                name_col = df.columns[2]
+                address_col = df.columns[20]
+                d365_col = df.columns[10]
+                markup_col = df.columns[14]
+                date_col = df.columns[15]
+                info_col = df.columns[28] if df.shape[1] > 28 else None
+                part_img_col = df.columns[29] if df.shape[1] > 29 else None
+                problem_img_col = df.columns[30] if df.shape[1] > 30 else None
+                supervisor_col = df.columns[33] if df.shape[1] > 33 else None
 
-            unique_services = df[markup_col].dropna().unique()
-            selected_service = st.selectbox("📂 Filter by Service Type (Optional):", ["All"] + list(unique_services))
+                unique_services = df[markup_col].dropna().unique()
+                selected_service = st.selectbox("📂 Filter by Service Type (Optional):", ["All"] + list(unique_services))
 
-            result = df[
-                df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
-                df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
-            ]
+                result = df[
+                    df[phone_col].astype(str).str.contains(user_input, case=False, na=False) |
+                    df[invoice_col].astype(str).str.contains(user_input, case=False, na=False)
+                ]
 
-            if selected_service != "All":
-                result = result[result[markup_col] == selected_service]
+                if selected_service != "All":
+                    result = result[result[markup_col] == selected_service]
 
-            if not result.empty:
-                st.success(f"✅ {len(result)} record(s) found.")
-                for _, row in result.iterrows():
-                    with st.expander(f" Result for Invoice: {row[invoice_col]}"):
-                        st.markdown(f"""
+                if not result.empty:
+                    st.success(f"✅ {len(result)} record(s) found.")
+                    for _, row in result.iterrows():
+                        with st.expander(f" Result for Invoice: {row[invoice_col]}"):
+                            st.markdown(f"""
 <div class='result-box'>
 <b> Name:</b> {row[name_col]}<br>
 <b> Mobile:</b> {row[phone_col]}<br>
@@ -107,22 +110,24 @@ if st.button("Search"):
 <b> D365 Update:</b> {row[d365_col]}<br>
 <b> Service Type:</b> {row[markup_col]}<br>
 <b> Scheduled:</b> {row[date_col]}<br>
-<b> Info:</b> {row[info_col]}<br>
-<b> Supervisor:</b> {row[supervisor_col]}
+<b> Info:</b> {row[info_col] if info_col else 'N/A'}<br>
+<b> Supervisor:</b> {row[supervisor_col] if supervisor_col else 'N/A'}
 </div>
-                        """, unsafe_allow_html=True)
+                            """, unsafe_allow_html=True)
 
-                        part_img_id = convert_drive_url_to_direct(row[part_img_col])
-                        if part_img_id:
-                            st.markdown("📸 **Picture of Part:**")
-                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)")
+                            if part_img_col:
+                                part_img_id = convert_drive_url_to_direct(row[part_img_col])
+                                if part_img_id:
+                                    st.markdown("📸 **Picture of Part:**")
+                                    st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{part_img_id}/view)")
 
-                        problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
-                        if problem_img_id:
-                            st.markdown("⚠️ **Picture of Problem:**")
-                            st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
-            else:
-                st.error("❌ No matching record found.")
+                            if problem_img_col:
+                                problem_img_id = convert_drive_url_to_direct(row[problem_img_col])
+                                if problem_img_id:
+                                    st.markdown("⚠️ **Picture of Problem:**")
+                                    st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
+                else:
+                    st.error("❌ No matching record found.")
 
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
