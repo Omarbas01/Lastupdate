@@ -58,7 +58,7 @@ def convert_drive_url_to_direct(cell_value):
 
 # ----------- Detect Mobile Column -----------
 def detect_mobile_column(df):
-    target_keywords = ["mobile", "جوال", "رقم", "phone"]
+    target_keywords = ["Phone Number | رقم الجوال ", "جوال", "رقم", "phone"]
     for col in df.columns:
         clean_col = col.strip().lower().replace("|", " ").replace("  ", " ")
         if any(keyword in clean_col for keyword in target_keywords):
