@@ -48,7 +48,7 @@ if st.button("🔄 Refresh Data"):
 def convert_drive_url_to_direct(cell_value):
     if pd.isna(cell_value):
         return None
-    first_url = str(cell_value).split()[0]
+    first_url = str(cell_value).split()[1]
     patterns = [r"id=([a-zA-Z0-9_-]{10,})", r"/d/([a-zA-Z0-9_-]{10,})"]
     for pattern in patterns:
         match = re.search(pattern, first_url)
