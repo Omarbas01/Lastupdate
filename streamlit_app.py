@@ -3,8 +3,7 @@ import pandas as pd
 from PIL import Image
 import re
 import io
-from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
+import xlsxwriter
 from datetime import datetime
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
@@ -182,12 +181,14 @@ if st.button("Search"):
                 st.markdown("---")
                 st.markdown("### 📁 Download Report")
                 output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
                     result.to_excel(writer, index=False, sheet_name="Maintenance Report")
+                    workbook = writer.book
                     worksheet = writer.sheets["Maintenance Report"]
-                    for cell in worksheet[1]:
-                        cell.font = Font(bold=True)
-                        cell.alignment = Alignment(horizontal="center")
+                    header_format = workbook.add_format({"bold": True, "align": "center"})
+                    for col_num, value in enumerate(result.columns.values):
+                        worksheet.write(0, col_num, value, header_format)
+                        worksheet.set_column(col_num, col_num, 20)
                 st.download_button(
                     label="📄 Download Report as Excel",
                     data=output.getvalue(),
