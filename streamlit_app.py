@@ -96,7 +96,7 @@ def detect_invoice_column(df):
 # ----------- Load Data Without Cache -----------
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
-    return pd.read_csv(url)
+    return pd.read_csv(url, encoding="utf-8")
 
 # ----------- Search Button -----------
 if st.button("Search"):
@@ -167,12 +167,16 @@ if st.button("Search"):
                                 st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
 
                 # ----------- Export Button -----------
-                csv = result.to_csv(index=False).encode('utf-8')
+                st.markdown("---")
+                st.markdown("### 📁 Download Report")
+                output = io.BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    result.to_excel(writer, index=False, encoding="utf-8")
                 st.download_button(
-                    label="📄 Download Report as CSV",
-                    data=csv,
-                    file_name="maintenance_report.csv",
-                    mime="text/csv",
+                    label="📄 Download Report as Excel",
+                    data=output.getvalue(),
+                    file_name="maintenance_report.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
             else:
                 st.error("❌ No matching record found.")
