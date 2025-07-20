@@ -100,7 +100,7 @@ if st.button("Search"):
                 st.stop()
 
             name_col = "First Name " if "الاسم الأول" in df.columns else df.columns[4]
-            address_col = "Address | العنوان" if "العنوان" in df.columns else df.columns[19]
+            address_col = "Address | العنوان" if "العنوان" in df.columns else df.columns[18]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
             date_col = "Date" if "Scheduled" in df.columns else df.columns[14]
