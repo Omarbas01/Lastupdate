@@ -149,6 +149,11 @@ if st.button("Search"):
 
             if not result.empty:
                 st.success(f"✅ {len(result)} record(s) found.")
+
+                # Summary
+                st.markdown("### 📊 Summary")
+                st.write(result[[markup_col, date_col]].groupby(markup_col).count().rename(columns={date_col: "Total"}))
+
                 for _, row in result.iterrows():
                     with st.expander(f" Result for Invoice: {row[invoice_col]}"):
                         st.markdown(f"""
