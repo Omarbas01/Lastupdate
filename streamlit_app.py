@@ -105,8 +105,8 @@ if st.button("Search"):
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
             date_col = "Date" if "Scheduled" in df.columns else df.columns[14]
             info_col = "التقييم" if "Info" in df.columns else df. columns[2]
-            part_img_col = "Picture of Part" if "Part Image" in df.columns else None
-            problem_img_col = "Problem Image" if "Problem Image" in df.columns else None
+            part_img_col = "Picture of Part" if "Part Image" in df.columns else df.columns[26]
+            problem_img_col = "Problem Image" if "Problem Image" in df.columns else df.columns[27]
             supervisor_col = "Supervisor" if "Supervisor" in df.columns else None
 
             unique_services = df[markup_col].dropna().unique()
