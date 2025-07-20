@@ -103,7 +103,7 @@ if st.button("Search"):
             address_col = "Address | العنوان" if "العنوان" in df.columns else df.columns[19]
             d365_col = "D365" if "D365" in df.columns else df.columns[10]
             markup_col = "MarkupCode" if "MarkupCode" in df.columns else df.columns[14]
-            date_col = "Date" if "Scheduled" in df.columns else df.columns[15]
+            date_col = "Date" if "Scheduled" in df.columns else df.columns[13]
             info_col = "التقييم" if "Info" in df.columns else df. columns[2]
             part_img_col = "Picture of Part" if "Part Image" in df.columns else None
             problem_img_col = "Problem Image" if "Problem Image" in df.columns else None
