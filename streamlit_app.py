@@ -1,14 +1,20 @@
+# streamlit_app.py
+
 import streamlit as st
 import pandas as pd
 from PIL import Image
 import re
 import io
-import xlsxwriter
 from datetime import datetime
+
+# Conditionally import xlsxwriter only when needed (at export time)
+try:
+    import xlsxwriter
+except ModuleNotFoundError:
+    xlsxwriter = None
 
 st.set_page_config(page_title="Maintenance Tracker - Rugaib", layout="centered")
 
-# ----------- CSS Styling -----------
 st.markdown("""
     <style>
         .stButton > button {
@@ -43,25 +49,20 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ----------- Logo -----------
 try:
     logo = Image.open("logo.png")
     st.image(logo, width=350)
 except FileNotFoundError:
     st.warning("⚠️ 'logo.png' not found. Please make sure it's in the same folder.")
 
-# ----------- Title -----------
 st.markdown("<h2 style='text-align:center; font-family:sans-serif;'>🛠️ Maintenance Tracker - Rugaib</h2>", unsafe_allow_html=True)
 
-# ----------- Input Section -----------
 user_input = st.text_input(" Enter Mobile Number or Invoice Number:")
 
-# ----------- Refresh Button -----------
 if st.button("🔄 Refresh Data"):
     st.cache_data.clear()
     st.success("✅ Data refreshed. Please click Search again.")
 
-# ----------- Google Drive Link Cleaner -----------
 def convert_drive_url_to_direct(cell_value):
     if pd.isna(cell_value):
         return None
@@ -73,7 +74,6 @@ def convert_drive_url_to_direct(cell_value):
             return match.group(1)
     return None
 
-# ----------- Detect Mobile Column -----------
 def detect_mobile_column(df):
     target_keywords = ["Phone Number | رقم الجوال ", "جوال", "رقم", "phone"]
     for col in df.columns:
@@ -87,7 +87,6 @@ def detect_mobile_column(df):
             return col
     return None
 
-# ----------- Detect Invoice Column -----------
 def detect_invoice_column(df):
     for col in df.columns:
         sample = df[col].astype(str).str.strip().dropna().head(100)
@@ -95,19 +94,16 @@ def detect_invoice_column(df):
             return col
     return df.columns[1]
 
-# ----------- Load Data Without Cache -----------
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/1ZZOFElk1ZOKSzRuVE_d_Et46JR-How-qo5xwij8NXho/export?format=csv&gid=1295915446"
     return pd.read_csv(url, encoding="utf-8")
 
-# ----------- Date Filter -----------
-start_date = st.date_input("📅 Start Date Filter (Optional):", value=None)
-end_date = st.date_input("📅 End Date Filter (Optional):", value=None)
+start_datetime = st.datetime_input("📅 Start Timestamp Filter (Optional):", value=None)
+end_datetime = st.datetime_input("📅 End Timestamp Filter (Optional):", value=None)
 
-# ----------- Search Button -----------
 if st.button("Search"):
-    if not user_input.strip() and not start_date and not end_date:
-        st.warning("Please enter a mobile number, invoice number, or select a date filter.")
+    if not user_input.strip() and not start_datetime and not end_datetime:
+        st.warning("Please enter a mobile number, invoice number, or select a timestamp filter.")
     else:
         try:
             with st.spinner("🛠️ Loading data..."):
@@ -145,15 +141,16 @@ if st.button("Search"):
             if selected_service != "All":
                 result = result[result[markup_col] == selected_service]
 
-            if start_date:
-                result = result[pd.to_datetime(result[date_col], errors='coerce') >= pd.to_datetime(start_date)]
-            if end_date:
-                result = result[pd.to_datetime(result[date_col], errors='coerce') <= pd.to_datetime(end_date)]
+            result[date_col] = pd.to_datetime(result[date_col], errors='coerce')
+
+            if start_datetime:
+                result = result[result[date_col] >= pd.to_datetime(start_datetime)]
+            if end_datetime:
+                result = result[result[date_col] <= pd.to_datetime(end_datetime)]
 
             if not result.empty:
                 st.success(f"✅ {len(result)} record(s) found.")
 
-                # Summary
                 st.markdown("### 📊 Summary")
                 st.write(result[[markup_col, date_col]].groupby(markup_col).count().rename(columns={date_col: "Total"}))
 
@@ -185,31 +182,32 @@ if st.button("Search"):
                                 st.markdown("⚠️ **Picture of Problem:**")
                                 st.markdown(f"[🔗 Open Image](https://drive.google.com/file/d/{problem_img_id}/view)")
 
-                # ----------- Export Button -----------
-                st.markdown("---")
-                st.markdown("### 📁 Download Report")
-                output = io.BytesIO()
-                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    result.to_excel(writer, index=False, sheet_name="Maintenance Report")
-                    workbook = writer.book
-                    worksheet = writer.sheets["Maintenance Report"]
-                    header_format = workbook.add_format({"bold": True, "align": "center"})
-                    for col_num, value in enumerate(result.columns.values):
-                        worksheet.write(0, col_num, value, header_format)
-                        worksheet.set_column(col_num, col_num, 20)
-                    writer.close()
-                output.seek(0)
-                st.download_button(
-                    label="📄 Download Report as Excel",
-                    data=output,
-                    file_name="maintenance_report.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+                if xlsxwriter:
+                    st.markdown("---")
+                    st.markdown("### 📁 Download Report")
+                    output = io.BytesIO()
+                    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                        result.to_excel(writer, index=False, sheet_name="Maintenance Report")
+                        workbook = writer.book
+                        worksheet = writer.sheets["Maintenance Report"]
+                        header_format = workbook.add_format({"bold": True, "align": "center"})
+                        for col_num, value in enumerate(result.columns.values):
+                            worksheet.write(0, col_num, value, header_format)
+                            worksheet.set_column(col_num, col_num, 20)
+                        writer.close()
+                    output.seek(0)
+                    st.download_button(
+                        label="📄 Download Report as Excel",
+                        data=output,
+                        file_name="maintenance_report.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+                else:
+                    st.warning("⚠️ Excel export requires `xlsxwriter`. Please install it using `pip install xlsxwriter`.")
             else:
                 st.error("❌ No matching record found.")
 
         except Exception as e:
             st.error(f"⚠️ Error: {e}")
 
-# ----------- Footer -----------
 st.caption("© Hamad M. Al Rugaib & Sons Trading Co. – Maintenance Department")
